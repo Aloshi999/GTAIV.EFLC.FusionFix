@@ -181,6 +181,15 @@ Recurso de memoria de «streaming»
 [Graphics API]
 API gráfica
 
+[DLSS]
+DLSS
+
+[DLSS_BAL]
+Equilibrado
+
+[DLSS_QUAL]
+Calidad
+
 [FF_RESTART]
 Es necesario reiniciar GTA IV para aplicar el ajuste.
 

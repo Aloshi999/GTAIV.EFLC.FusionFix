@@ -2,6 +2,7 @@ module;
 
 #include <common.hxx>
 #include <d3dx9tex.h>
+#include "dlss/dlss_api.h"
 
 export module postfx;
 
@@ -1314,7 +1315,7 @@ private:
                             pDevice->SetSamplerState(i, D3DSAMP_MAGFILTER, PostFxResources.Samplers[i]);
                         }
 
-                        if (UsePostFxAA->get() > FusionFixSettings.AntialiasingText.eMO_OFF)
+                        if (!FusionFixDLSS_ShouldForcePostFxOff() && UsePostFxAA->get() > FusionFixSettings.AntialiasingText.eMO_OFF)
                             pDevice->SetRenderTarget(0, PostFxResources.FullScreenSurface_temp2);
                         else
                             pDevice->SetRenderTarget(0, PostFxResources.backBuffer);
@@ -1332,8 +1333,8 @@ private:
                         //     PostFxResources.swapbuffers();
                     }
 
-                    // Anti aliasing
-                    if (UsePostFxAA && UsePostFxAA->get() > FusionFixSettings.AntialiasingText.eMO_OFF)
+                    // Anti aliasing (DLSS owns the temporal path — SMAA/FXAA must not fight the upscaler)
+                    if (!FusionFixDLSS_ShouldForcePostFxOff() && UsePostFxAA && UsePostFxAA->get() > FusionFixSettings.AntialiasingText.eMO_OFF)
                     {
                         // FXAA
                         if ((UsePostFxAA->get() == FusionFixSettings.AntialiasingText.eFXAA) && PostFxResources.FxaaPS)

@@ -181,6 +181,15 @@ Streaming-Budget
 [Graphics API]
 Grafik-API
 
+[DLSS]
+DLSS
+
+[DLSS_BAL]
+Ausgewogen
+
+[DLSS_QUAL]
+Qualität
+
 [FF_RESTART]
 GTA IV muss neu gestartet werden, um die Einstellungen anzuwenden.
 

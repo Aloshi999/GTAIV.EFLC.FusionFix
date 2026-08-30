@@ -181,6 +181,15 @@ FPSリミッター
 [Graphics API]
 グラフィックスAPI
 
+[DLSS]
+DLSS
+
+[DLSS_BAL]
+バランス
+
+[DLSS_QUAL]
+クオリティ
+
 [FF_RESTART]
 設定を適用するにはGTA IVを再起動する必要があります。
 

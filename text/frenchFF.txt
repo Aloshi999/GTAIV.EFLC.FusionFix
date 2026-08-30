@@ -181,6 +181,15 @@ Budget de mémoire de streaming
 [Graphics API]
 API graphique
 
+[DLSS]
+DLSS
+
+[DLSS_BAL]
+Équilibré
+
+[DLSS_QUAL]
+Qualité
+
 [FF_RESTART]
 GTA IV doit être redémarré pour appliquer les paramètres.
 

@@ -1,0 +1,47 @@
+#version 450
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0) uniform sampler2D uDepth;
+layout(binding = 1, rg16f) uniform writeonly image2D uMotion;
+
+// Two row-major D3D matrices uploaded as GLSL column-major via transpose on the CPU.
+layout(push_constant) uniform PC {
+    mat4 invViewProj;
+    mat4 prevViewProj;
+} pc;
+
+void main()
+{
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(uMotion);
+    if (p.x >= size.x || p.y >= size.y)
+        return;
+
+    vec2 resolution = vec2(size);
+    vec2 uv = (vec2(p) + 0.5) / resolution;
+    float depth = textureLod(uDepth, uv, 0.0).r;
+
+    vec4 clip = vec4(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, depth, 1.0);
+    vec4 world = pc.invViewProj * clip;
+    if (abs(world.w) < 1e-8)
+    {
+        imageStore(uMotion, p, vec4(0.0));
+        return;
+    }
+    world /= world.w;
+    world.w = 1.0;
+
+    vec4 prev = pc.prevViewProj * world;
+    if (abs(prev.w) < 1e-8)
+    {
+        imageStore(uMotion, p, vec4(0.0));
+        return;
+    }
+    prev /= prev.w;
+
+    vec2 curPx = vec2((clip.x * 0.5 + 0.5) * resolution.x,
+                      (1.0 - (clip.y * 0.5 + 0.5)) * resolution.y);
+    vec2 prevPx = vec2((prev.x * 0.5 + 0.5) * resolution.x,
+                       (1.0 - (prev.y * 0.5 + 0.5)) * resolution.y);
+    imageStore(uMotion, p, vec4(prevPx - curPx, 0.0, 0.0));
+}

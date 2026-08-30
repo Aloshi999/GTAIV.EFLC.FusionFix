@@ -220,6 +220,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
         if (apiValue)
         {
+            // DXVK (this repo ships it as vulkan.dll). FusionFix's ASI hooks
+            // vulkan-1.dll / Present for driver NGX DLSS Super Resolution.
             lstrcpyW(path, L"vulkan.dll");
             d3d9.dll = LoadLibraryW(path);
         }

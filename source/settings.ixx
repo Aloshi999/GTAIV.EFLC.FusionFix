@@ -4,6 +4,7 @@ module;
 #include <shlobj.h>
 #include <filesystem>
 #include <d3dx9.h>
+#include "dlss/dlss_api.h"
 
 export module settings;
 
@@ -35,6 +36,9 @@ namespace CText
     SafetyHookInline shGetTextByKey{};
     const wchar_t* __fastcall getTextByKey(CText* text, void* edx, uint32_t hash, int a3)
     {
+        if (hash == GetHash("DLSS"))
+            return FusionFixDLSS_GetMenuLabel();
+
         if (gxtEntries.contains(hash))
             return gxtEntries[hash].c_str();
 
@@ -44,6 +48,9 @@ namespace CText
     SafetyHookInline shDoesTextLabelExist{};
     char __fastcall doesTextLabelExist(CText* text, void* edx, const char* key)
     {
+        if (key && (std::strcmp(key, "DLSS") == 0 || std::strcmp(key, "DLSS_BAL") == 0 || std::strcmp(key, "DLSS_QUAL") == 0))
+            return 1;
+
         if (gxtEntries.contains(GetHash(key)))
             return 1;
 
@@ -341,6 +348,7 @@ public:
             { 0, "PREF_NOWARDROBEFADING",       "MISC",       "DisableWardrobeTransition",          "",                           0, nullptr, 0, 1 },
             { 0, "PREF_STOPTAXI",               "MISC",       "InstantStopTaxi",                    "",                           0, nullptr, 0, 1 },
             { 0, "PREF_SAO",                    "MISC",       "AmbientOcclusion",                   "",                           0, nullptr, 0, 1 },
+            { 0, "PREF_DLSS",                   "MAIN",       "DLSS",                               "MENU_DISPLAY_DLSS",          0, nullptr, 0, 2 },
             // Enums are at capacity, to use more enums, replace multiplayer ones. On/Off toggles should still be possible to add.
         };
 
@@ -455,6 +463,13 @@ public:
 public:
     int32_t Get(int32_t prefID)
     {
+        if (FusionFixDLSS_ShouldForcePostFxOff())
+        {
+            if (isSame(prefID, "PREF_ANTIALIASING"))
+                return AntialiasingText.eMO_OFF;
+            if (isSame(prefID, "PREF_MOTIONBLUR"))
+                return 0;
+        }
         if (prefID >= firstCustomID)
             return mFusionPrefs[prefID].GetValue();
         else
@@ -618,6 +633,12 @@ public:
 
     struct
     {
+        enum eDlssText { eOff, eBalanced, eQuality };
+        std::vector<const char*> data = { "MO_OFF", "DLSS_BAL", "DLSS_QUAL" };
+    } DlssText;
+
+    struct
+    {
         enum eExtraNightShadowsText { eOff, eLampposts, eLampostsHeadl, eLampHeadlVNS };
         std::vector<const char*> data = { "MO_OFF", "Lampposts", "LampostsHeadl", "LampHeadlVNS" };
     } ExtraNightShadowsText;
@@ -687,6 +708,14 @@ public:
 
                     FusionFixSettings.Set(id, value);
 
+                    if (FusionFixDLSS_ShouldForcePostFxOff())
+                    {
+                        if (FusionFixSettings.isSame(id, "PREF_ANTIALIASING"))
+                            FusionFixSettings.Set(id, FusionFixSettings.AntialiasingText.eMO_OFF);
+                        else if (FusionFixSettings.isSame(id, "PREF_MOTIONBLUR"))
+                            FusionFixSettings.Set(id, 0);
+                    }
+
                     // custom handler for language switch
                     if (FusionFixSettings.isSame(id, "PREF_CURRENT_LANGUAGE"))
                     {
@@ -748,6 +777,14 @@ public:
                     });
 
                     FusionFixSettings.Set(id, value);
+
+                    if (FusionFixDLSS_ShouldForcePostFxOff())
+                    {
+                        if (FusionFixSettings.isSame(id, "PREF_ANTIALIASING"))
+                            FusionFixSettings.Set(id, FusionFixSettings.AntialiasingText.eMO_OFF);
+                        else if (FusionFixSettings.isSame(id, "PREF_MOTIONBLUR"))
+                            FusionFixSettings.Set(id, 0);
+                    }
                 }
             }; injector::MakeInline<IniWriterMouse>(pattern.get_first(0), pattern.get_first(7));
 

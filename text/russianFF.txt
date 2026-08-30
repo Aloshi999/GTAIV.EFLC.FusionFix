@@ -181,6 +181,15 @@ Fusion Fix: Проверять Обновления
 [Graphics API]
 Графический API
 
+[DLSS]
+DLSS
+
+[DLSS_BAL]
+Баланс
+
+[DLSS_QUAL]
+Качество
+
 [FF_RESTART]
 GTA IV необходимо перезапустить для применения настроек.
 
