@@ -193,6 +193,18 @@ DLSS
 [FF_RESTART]
 GTA IV необходимо перезапустить для применения настроек.
 
+[FF_DLSS_NOVULKAN]
+~r~Для DLSS нужен графический API Vulkan и перезапуск.
+
+[FF_DLSS_NONGX]
+~r~Для DLSS нужен драйвер NVIDIA с NGX.
+
+[FF_DLSS_NOSWAP]
+~r~DLSS не удалось привязать цепочку обмена Vulkan.
+
+[FF_DLSS_NGXERR]
+~r~Ошибка NGX DLSS.
+
 [Extended Sniper]
 Расширенное управление снайперской винтовкой
 

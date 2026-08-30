@@ -193,6 +193,18 @@ Qualität
 [FF_RESTART]
 GTA IV muss neu gestartet werden, um die Einstellungen anzuwenden.
 
+[FF_DLSS_NOVULKAN]
+~r~DLSS benötigt die Grafik-API Vulkan und einen Neustart.
+
+[FF_DLSS_NONGX]
+~r~DLSS benötigt einen NVIDIA-Treiber mit NGX.
+
+[FF_DLSS_NOSWAP]
+~r~DLSS konnte die Vulkan-Swapchain nicht binden.
+
+[FF_DLSS_NGXERR]
+~r~DLSS-NGX-Fehler.
+
 [Extended Sniper]
 Erweiterte Sniper-Steuerung
 

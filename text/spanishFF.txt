@@ -193,6 +193,18 @@ Calidad
 [FF_RESTART]
 Es necesario reiniciar GTA IV para aplicar el ajuste.
 
+[FF_DLSS_NOVULKAN]
+~r~DLSS necesita la API gráfica Vulkan y un reinicio.
+
+[FF_DLSS_NONGX]
+~r~DLSS necesita un controlador NVIDIA con NGX.
+
+[FF_DLSS_NOSWAP]
+~r~DLSS no pudo vincular la swapchain de Vulkan.
+
+[FF_DLSS_NGXERR]
+~r~Error NGX de DLSS.
+
 [Extended Sniper]
 Controles extendidos del rifle de francotirador
 

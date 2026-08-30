@@ -113,8 +113,8 @@ Also available for [Max Payne 3](https://github.com/ThirteenAG/MaxPayne3.FusionF
 > * Install this stock FusionFix 5.0.1 build (not RTX Remix, not xoxor4d gta4-rtx, not the RTX FusionFix fork).
 > * Set **Graphics API** to **Vulkan**, then **restart** the game so DXVK is actually loaded.
 > * In the Graphics menu set **DLSS** to **Balanced** or **Quality**. The injector talks to the NVIDIA display driver’s NGX only — do not place `nvngx_dlss*.dll`, Frame Gen, OptiScaler, or ReShade next to the game.
-> * While DLSS is not Off, **SMAA/FXAA** and FusionFix **Motion Blur** are forced off (they fight the Halton/DLSS jitter). Jitter is the DLSS Halton sequence, not FusionFix motion blur.
-> * If NGX cannot start, the same **DLSS** menu row shows why (`DLSS: no Vulkan`, `DLSS: no NGX`, `DLSS: NGX 0x…`). It does not fail silently.
+> * While DLSS is not Off, **SMAA/FXAA** and FusionFix **Motion Blur** grey out and stay forced off (they fight the Halton/DLSS jitter). Jitter is the DLSS Halton sequence, not FusionFix motion blur.
+> * The Graphics row is exactly **DLSS** with **Off / Balanced / Quality** only. If NGX cannot start, the Graphics tab extra-info line says why. It does not fail silently.
 
 #### Game
 

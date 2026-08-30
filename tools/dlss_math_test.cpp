@@ -1,9 +1,11 @@
-// Host unit test for FusionFix DLSS math (no Windows / NGX required).
+// Host unit test for FusionFix DLSS math and locked look copy (no Windows / NGX required).
 #include "../source/dlss/dlss_math.h"
+#include "../source/dlss/dlss_menu.h"
 
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 using namespace FusionFixDLSSMath;
 
@@ -73,6 +75,25 @@ int main()
     const Vec2 mv = ReconstructMotionPixels(0.5f, 0.5f, 0.5f, Mat4Inverse(vp), vp, 1920.0f, 1080.0f);
     expectNear(mv.x, 0.0f, 0.05f, "static camera MV.x ~ 0");
     expectNear(mv.y, 0.0f, 0.05f, "static camera MV.y ~ 0");
+
+    expect(std::strcmp(FusionFixDLSS_LookCopyLabel(), "DLSS") == 0, "look copy label is DLSS");
+    expect(FusionFixDLSS_IsLockedValueKey("MO_OFF") == 1, "Off is a locked value");
+    expect(FusionFixDLSS_IsLockedValueKey("DLSS_BAL") == 1, "Balanced is a locked value");
+    expect(FusionFixDLSS_IsLockedValueKey("DLSS_QUAL") == 1, "Quality is a locked value");
+    expect(FusionFixDLSS_IsForbiddenValueKey("DLAA") == 1, "DLAA is forbidden");
+    expect(FusionFixDLSS_IsForbiddenValueKey("UltraPerf") == 1, "UltraPerf is forbidden");
+    expect(FusionFixDLSS_IsForbiddenValueKey("AUTO") == 1, "AUTO is forbidden");
+    expect(FusionFixDLSS_IsForbiddenValueKey("FrameGen") == 1, "FrameGen is forbidden");
+    expect(FusionFixDLSS_IsForbiddenValueKey("DLSS_BAL") == 0, "Balanced is not forbidden");
+    expect(FusionFixDLSS_IsGreyedPostFxKey("Antialiasing") == 1, "Antialiasing greys");
+    expect(FusionFixDLSS_IsGreyedPostFxKey("Motion Blur") == 1, "Motion Blur greys");
+    expect(FusionFixDLSS_IsGreyedPostFxKey("FXAA") == 1, "FXAA greys");
+    expect(FusionFixDLSS_IsGreyedPostFxKey("SMAA") == 1, "SMAA greys");
+    expect(FusionFixDLSS_IsGreyedPostFxKey("DLSS") == 0, "DLSS row does not grey");
+    expect(std::strcmp(FusionFixDLSS_ExtraInfoKeyForStatus(2), "FF_DLSS_NOVULKAN") == 0, "no-Vulkan extra-info key");
+    expect(std::strcmp(FusionFixDLSS_ExtraInfoKeyForStatus(3), "FF_DLSS_NONGX") == 0, "no-NGX extra-info key");
+    expect(FusionFixDLSS_ExtraInfoKeyForStatus(0) == nullptr, "idle has no extra info");
+    expect(FusionFixDLSS_ExtraInfoKeyForStatus(1) == nullptr, "ok has no extra info");
 
     if (g_fails)
     {

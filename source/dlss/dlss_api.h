@@ -24,11 +24,21 @@ enum FusionFixDLSSStatus
     FusionFixDLSSStatus_NoSwapchain = 5,
 };
 
-// Menu label for the DLSS row. Never null. May be "DLSS" or "DLSS: no Vulkan" / "DLSS: NGX 0x…".
+// Locked look copy: the Graphics row label is always "DLSS". Never null.
 const wchar_t* FusionFixDLSS_GetMenuLabel(void);
+
+// Graphics-tab extra-info GXT key, or null when the row should stay quiet.
+const char* FusionFixDLSS_GetExtraInfoKey(void);
+
+// English fallback for extra info. Never null; empty when there is nothing to say.
+const wchar_t* FusionFixDLSS_GetExtraInfo(void);
 
 // True when the user selected Balanced/Quality (SMAA/FXAA + FF motion blur must stay off).
 int FusionFixDLSS_ShouldForcePostFxOff(void);
+
+// Arm/consume grey draws for the AA and Motion Blur rows.
+void FusionFixDLSS_ArmGreyDraw(int count);
+int FusionFixDLSS_ConsumeGreyDraw(void);
 
 int FusionFixDLSS_GetMode(void);
 int FusionFixDLSS_GetStatus(void);

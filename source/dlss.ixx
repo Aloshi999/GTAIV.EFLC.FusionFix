@@ -233,20 +233,8 @@ namespace
     {
         g.status = status;
         g.ngxResult = ngx;
-        if (status == FusionFixDLSSStatus_Idle || (status == FusionFixDLSSStatus_Ok && g.mode == 0))
-            wcsncpy_s(g.label, L"DLSS", _TRUNCATE);
-        else if (status == FusionFixDLSSStatus_Ok)
-            wcsncpy_s(g.label, L"DLSS", _TRUNCATE);
-        else if (status == FusionFixDLSSStatus_NoVulkan)
-            wcsncpy_s(g.label, L"DLSS: no Vulkan", _TRUNCATE);
-        else if (status == FusionFixDLSSStatus_NoNgx)
-            wcsncpy_s(g.label, L"DLSS: no NGX", _TRUNCATE);
-        else if (status == FusionFixDLSSStatus_NoSwapchain)
-            wcsncpy_s(g.label, L"DLSS: no swapchain", _TRUNCATE);
-        else
-        {
-            swprintf_s(g.label, L"DLSS: NGX 0x%X", ngx ? ngx : 0xBAD00000u);
-        }
+        // Locked look copy: the Graphics row is always "DLSS". Status goes to extra info.
+        wcsncpy_s(g.label, L"DLSS", _TRUNCATE);
         FusionFixDLSS_StoreMenuState(g.mode, g.status, g.ngxResult, g.label);
     }
 

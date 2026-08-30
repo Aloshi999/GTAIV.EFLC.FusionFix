@@ -193,6 +193,18 @@ DLSS
 [FF_RESTART]
 設定を適用するにはGTA IVを再起動する必要があります。
 
+[FF_DLSS_NOVULKAN]
+~r~DLSSを使うにはグラフィックスAPIをVulkanに設定し、再起動してください。
+
+[FF_DLSS_NONGX]
+~r~DLSSにはNGX対応のNVIDIAドライバーが必要です。
+
+[FF_DLSS_NOSWAP]
+~r~DLSSはVulkanスワップチェーンに接続できませんでした。
+
+[FF_DLSS_NGXERR]
+~r~DLSS NGXエラー。
+
 [Extended Sniper]
 スナイパーライフルの追加操作
 
