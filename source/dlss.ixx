@@ -247,6 +247,7 @@ namespace
         {
             swprintf_s(g.label, L"DLSS: NGX 0x%X", ngx ? ngx : 0xBAD00000u);
         }
+        FusionFixDLSS_StoreMenuState(g.mode, g.status, g.ngxResult, g.label);
     }
 
     void RefreshStatusLocked()
@@ -1458,34 +1459,6 @@ namespace
             else
                 SetStatus(g.ngxInited ? FusionFixDLSSStatus_Ok : FusionFixDLSSStatus_Idle);
         }
-    }
-}
-
-extern "C"
-{
-    const wchar_t* FusionFixDLSS_GetMenuLabel(void)
-    {
-        return g.label;
-    }
-
-    int FusionFixDLSS_ShouldForcePostFxOff(void)
-    {
-        return g.mode != FusionFixDLSSMode_Off ? 1 : 0;
-    }
-
-    int FusionFixDLSS_GetMode(void)
-    {
-        return g.mode;
-    }
-
-    int FusionFixDLSS_GetStatus(void)
-    {
-        return g.status;
-    }
-
-    unsigned int FusionFixDLSS_GetNgxResult(void)
-    {
-        return g.ngxResult;
     }
 }
 

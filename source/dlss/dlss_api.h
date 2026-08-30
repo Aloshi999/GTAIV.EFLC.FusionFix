@@ -36,4 +36,7 @@ unsigned int FusionFixDLSS_GetNgxResult(void);
 
 #ifdef __cplusplus
 }
+
+// Written by the ASI module; read by the C ABI above.
+void FusionFixDLSS_StoreMenuState(int mode, int status, unsigned ngx, const wchar_t* label);
 #endif
