@@ -4,6 +4,7 @@ module;
 #include <shlobj.h>
 #include <filesystem>
 #include <d3dx9.h>
+#include "dlss/dlss_api.h"
 
 export module settings;
 
@@ -35,15 +36,31 @@ namespace CText
     SafetyHookInline shGetTextByKey{};
     const wchar_t* __fastcall getTextByKey(CText* text, void* edx, uint32_t hash, int a3)
     {
+        const wchar_t* src = nullptr;
         if (gxtEntries.contains(hash))
-            return gxtEntries[hash].c_str();
+            src = gxtEntries[hash].c_str();
+        else
+            src = shGetTextByKey.fastcall<const wchar_t*>(text, edx, hash, a3);
 
-        return shGetTextByKey.fastcall<const wchar_t*>(text, edx, hash, a3);
+        if (FusionFixDLSS_ShouldForcePostFxOff())
+        {
+            static const uint32_t kAA = GetHash("Antialiasing");
+            static const uint32_t kMB = GetHash("Motion Blur");
+            static const uint32_t kFXAA = GetHash("FXAA");
+            static const uint32_t kSMAA = GetHash("SMAA");
+            if (hash == kAA || hash == kMB || hash == kFXAA || hash == kSMAA)
+                FusionFixDLSS_ArmGreyDraw(4);
+        }
+
+        return src;
     }
 
     SafetyHookInline shDoesTextLabelExist{};
     char __fastcall doesTextLabelExist(CText* text, void* edx, const char* key)
     {
+        if (key && (std::strcmp(key, "DLSS") == 0 || std::strcmp(key, "DLSS_BAL") == 0 || std::strcmp(key, "DLSS_QUAL") == 0))
+            return 1;
+
         if (gxtEntries.contains(GetHash(key)))
             return 1;
 
@@ -80,6 +97,27 @@ namespace CText
 
         pattern = find_pattern("51 8B 44 24 08 53 8B D9 C6 44 24", "51 8B 44 24 08 85 C0 53 8B D9");
         shDoesTextLabelExist = safetyhook::create_inline(pattern.get_first(), doesTextLabelExist);
+
+        // Grey SMAA/FXAA and FusionFix motion blur while DLSS is not Off.
+        // ~c~ is not a safe GTA IV grey token (controller icon in some titles), so dim the font RGB.
+        auto greyPat = find_pattern(
+            "8A 44 24 04 A2 ? ? ? ? 8A 44 24 08 A2 ? ? ? ? 8A 44 24 0C A2",
+            "8A 4C 24 04 88 0D ? ? ? ? 8A 54 24 08 88 15 ? ? ? ? 8A 44 24 0C 88 05"
+        );
+        if (!greyPat.empty())
+        {
+            static auto greyFont = safetyhook::create_mid(greyPat.get_first(0), [](SafetyHookContext& regs)
+            {
+                if (!FusionFixDLSS_ConsumeGreyDraw())
+                    return;
+                auto* r = reinterpret_cast<uint8_t*>(regs.esp + 4);
+                auto* g = reinterpret_cast<uint8_t*>(regs.esp + 8);
+                auto* b = reinterpret_cast<uint8_t*>(regs.esp + 12);
+                *r = 0x7A;
+                *g = 0x7A;
+                *b = 0x7A;
+            });
+        }
     }
 }
 
@@ -341,6 +379,7 @@ public:
             { 0, "PREF_NOWARDROBEFADING",       "MISC",       "DisableWardrobeTransition",          "",                           0, nullptr, 0, 1 },
             { 0, "PREF_STOPTAXI",               "MISC",       "InstantStopTaxi",                    "",                           0, nullptr, 0, 1 },
             { 0, "PREF_SAO",                    "MISC",       "AmbientOcclusion",                   "",                           0, nullptr, 0, 1 },
+            { 0, "PREF_DLSS",                   "MAIN",       "DLSS",                               "MENU_DISPLAY_DLSS",          0, nullptr, 0, 2 },
             // Enums are at capacity, to use more enums, replace multiplayer ones. On/Off toggles should still be possible to add.
         };
 
@@ -455,6 +494,13 @@ public:
 public:
     int32_t Get(int32_t prefID)
     {
+        if (FusionFixDLSS_ShouldForcePostFxOff())
+        {
+            if (isSame(prefID, "PREF_ANTIALIASING"))
+                return AntialiasingText.eMO_OFF;
+            if (isSame(prefID, "PREF_MOTIONBLUR"))
+                return 0;
+        }
         if (prefID >= firstCustomID)
             return mFusionPrefs[prefID].GetValue();
         else
@@ -618,6 +664,12 @@ public:
 
     struct
     {
+        enum eDlssText { eOff, eBalanced, eQuality };
+        std::vector<const char*> data = { "MO_OFF", "DLSS_BAL", "DLSS_QUAL" };
+    } DlssText;
+
+    struct
+    {
         enum eExtraNightShadowsText { eOff, eLampposts, eLampostsHeadl, eLampHeadlVNS };
         std::vector<const char*> data = { "MO_OFF", "Lampposts", "LampostsHeadl", "LampHeadlVNS" };
     } ExtraNightShadowsText;
@@ -667,6 +719,20 @@ public:
                     {
                         id = regs.ecx;
                         value = regs.ebx;
+                    }
+
+                    if (FusionFixDLSS_ShouldForcePostFxOff())
+                    {
+                        if (FusionFixSettings.isSame(id, "PREF_ANTIALIASING"))
+                        {
+                            FusionFixSettings.Set(id, FusionFixSettings.AntialiasingText.eMO_OFF);
+                            return;
+                        }
+                        if (FusionFixSettings.isSame(id, "PREF_MOTIONBLUR"))
+                        {
+                            FusionFixSettings.Set(id, 0);
+                            return;
+                        }
                     }
 
                     auto old = FusionFixSettings(id);
@@ -731,6 +797,20 @@ public:
                         value = regs.edx;
                     }
 
+                    if (FusionFixDLSS_ShouldForcePostFxOff())
+                    {
+                        if (FusionFixSettings.isSame(id, "PREF_ANTIALIASING"))
+                        {
+                            FusionFixSettings.Set(id, FusionFixSettings.AntialiasingText.eMO_OFF);
+                            return;
+                        }
+                        if (FusionFixSettings.isSame(id, "PREF_MOTIONBLUR"))
+                        {
+                            FusionFixSettings.Set(id, 0);
+                            return;
+                        }
+                    }
+
                     auto old = FusionFixSettings(id);
 
                     FusionFixSettings.ForEachPref([&](int32_t prefID, int32_t idStart, int32_t idEnd)
@@ -751,6 +831,14 @@ public:
                 }
             }; injector::MakeInline<IniWriterMouse>(pattern.get_first(0), pattern.get_first(7));
 
+            static auto armGreyIfForcedPostFx = [](int32_t prefID)
+            {
+                if (FusionFixDLSS_ShouldForcePostFxOff()
+                    && (FusionFixSettings.isSame(prefID, "PREF_ANTIALIASING")
+                        || FusionFixSettings.isSame(prefID, "PREF_MOTIONBLUR")))
+                    FusionFixDLSS_ArmGreyDraw(4);
+            };
+
             pattern = find_pattern("8B 1C 95 ? ? ? ? 89 54 24 14", "8B 1C 8D ? ? ? ? 89 4C 24 18");
             static auto reg2 = *pattern.get_first<uint8_t>(2);
             struct MenuTogglesHook1
@@ -759,9 +847,11 @@ public:
                 {
                     if (reg2 == 0x8D)
                     {
+                        armGreyIfForcedPostFx(static_cast<int32_t>(regs.ecx));
                         regs.ebx = FusionFixSettings.Get(regs.ecx);
                         return;
                     }
+                    armGreyIfForcedPostFx(static_cast<int32_t>(regs.edx));
                     regs.ebx = FusionFixSettings.Get(regs.edx);
                 }
             }; injector::MakeInline<MenuTogglesHook1>(pattern.get_first(0), pattern.get_first(7));
@@ -774,9 +864,11 @@ public:
                 {
                     if (reg3 == 0x8D)
                     {
+                        armGreyIfForcedPostFx(static_cast<int32_t>(regs.ecx));
                         regs.ecx = FusionFixSettings.Get(regs.ecx);
                         return;
                     }
+                    armGreyIfForcedPostFx(static_cast<int32_t>(regs.eax));
                     regs.edx = FusionFixSettings.Get(regs.eax);
                 }
             }; injector::MakeInline<MenuTogglesHook2>(pattern.get_first(0), pattern.get_first(7));

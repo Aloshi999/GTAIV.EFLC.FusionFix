@@ -3,6 +3,7 @@ module;
 #include <common.hxx>
 #include <psapi.h>
 #include <format>
+#include "dlss/dlss_api.h"
 
 export module extrainfo;
 
@@ -163,6 +164,19 @@ public:
                                         extra += L"                        ";
                                         auto FF_WARN6 = CText::getText("FF_WARN6");
                                         extra += FF_WARN6[0] ? FF_WARN6 : L"~r~WARNING: CHSS only takes effect with Shadow Quality set to Very High.";
+                                    }
+                                }
+
+                                if (auto dlssKey = FusionFixDLSS_GetExtraInfoKey(); dlssKey && dlssKey[0])
+                                {
+                                    extra += L"~n~";
+                                    extra += L"                        ";
+                                    auto dlssInfo = CText::getText(dlssKey);
+                                    extra += (dlssInfo && dlssInfo[0]) ? dlssInfo : FusionFixDLSS_GetExtraInfo();
+                                    if (FusionFixDLSS_GetStatus() == FusionFixDLSSStatus_NgxError)
+                                    {
+                                        extra += L" 0x";
+                                        extra += std::format(L"{:X}", FusionFixDLSS_GetNgxResult());
                                     }
                                 }
                             }

@@ -104,7 +104,17 @@ Also available for [Max Payne 3](https://github.com/ThirteenAG/MaxPayne3.FusionF
 - **Tone Mapping**, prevents highlights from being blown out, more operators can be found [here](https://github.com/Parallellines0451/GTAIV.EFLC.FusionShaders/tree/main/assets/luts/samples)
 - **Ambient Occlusion**, a toggle for scalable ambient obscurance
 - **Shadow Filter**, toggles between sharp, soft, or contact hardening shadows
-- **Graphics API**, selects between DirectX 9 and Vulkan (through [DXVK](https://github.com/doitsujin/dxvk/releases)), requires a restart 
+- **Graphics API**, selects between DirectX 9 and Vulkan (through [DXVK](https://github.com/doitsujin/dxvk/releases)), requires a restart
+- **DLSS**, NVIDIA DLSS Super Resolution (Off / Balanced / Quality) on the same Graphics menu row next to Graphics API. Uses the official NVIDIA driver NGX on FusionFix’s bundled DXVK Vulkan path. Not an overlay, not a separate .ini app, not Frame Generation.
+
+> [!NOTE]
+> **DLSS Super Resolution (this fork, stock FusionFix 5.0.1)**
+>
+> * Install this stock FusionFix 5.0.1 build (not RTX Remix, not xoxor4d gta4-rtx, not the RTX FusionFix fork).
+> * Set **Graphics API** to **Vulkan**, then **restart** the game so DXVK is actually loaded.
+> * In the Graphics menu set **DLSS** to **Balanced** or **Quality**. The injector talks to the NVIDIA display driver’s NGX only — do not place `nvngx_dlss*.dll`, Frame Gen, OptiScaler, or ReShade next to the game.
+> * While DLSS is not Off, **SMAA/FXAA** and FusionFix **Motion Blur** grey out and stay forced off (they fight the Halton/DLSS jitter). Jitter is the DLSS Halton sequence, not FusionFix motion blur.
+> * The Graphics row is exactly **DLSS** with **Off / Balanced / Quality** only. If NGX cannot start, the Graphics tab extra-info line says why. It does not fail silently.
 
 #### Game
 

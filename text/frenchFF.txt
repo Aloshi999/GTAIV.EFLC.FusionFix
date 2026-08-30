@@ -181,8 +181,29 @@ Budget de mémoire de streaming
 [Graphics API]
 API graphique
 
+[DLSS]
+DLSS
+
+[DLSS_BAL]
+Équilibré
+
+[DLSS_QUAL]
+Qualité
+
 [FF_RESTART]
 GTA IV doit être redémarré pour appliquer les paramètres.
+
+[FF_DLSS_NOVULKAN]
+~r~DLSS nécessite l'API graphique Vulkan, puis un redémarrage.
+
+[FF_DLSS_NONGX]
+~r~DLSS nécessite un pilote NVIDIA avec NGX.
+
+[FF_DLSS_NOSWAP]
+~r~DLSS n'a pas pu lier le swapchain Vulkan.
+
+[FF_DLSS_NGXERR]
+~r~Erreur NGX DLSS.
 
 [Extended Sniper]
 Commande étendue du fusil de sniper

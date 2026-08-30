@@ -2,6 +2,7 @@ module;
 
 #include <common.hxx>
 #include <concepts>
+#include "dlss/dlss_api.h"
 
 export module shaders;
 
@@ -532,7 +533,9 @@ public:
                         arr3[1] = (bSmoothShorelines ? 1.0f : 0.0f);
                         //arr3[2] = static_cast<float>(gamma->get());
                         static float mblurscale = 1.0f;
-                        switch(mblur->get())
+                        if (FusionFixDLSS_ShouldForcePostFxOff())
+                            mblurscale = 0.0f;
+                        else switch(mblur->get())
                         {
                             case 0: mblurscale = 0.0f; break;
                             case 1: mblurscale = 0.125f; break;

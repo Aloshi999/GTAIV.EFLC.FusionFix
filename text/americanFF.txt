@@ -181,8 +181,29 @@ Streaming budget
 [Graphics API]
 Graphics API
 
+[DLSS]
+DLSS
+
+[DLSS_BAL]
+Balanced
+
+[DLSS_QUAL]
+Quality
+
 [FF_RESTART]
 GTA IV must be restarted in order to apply settings.
+
+[FF_DLSS_NOVULKAN]
+~r~DLSS needs Graphics API set to Vulkan, then a restart.
+
+[FF_DLSS_NONGX]
+~r~DLSS needs an NVIDIA driver with NGX.
+
+[FF_DLSS_NOSWAP]
+~r~DLSS could not bind the Vulkan swapchain.
+
+[FF_DLSS_NGXERR]
+~r~DLSS NGX error.
 
 [Extended Sniper]
 Extended Sniper Controls

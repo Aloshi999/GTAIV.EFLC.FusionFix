@@ -4,6 +4,7 @@ import common;
 import comvars;
 import compat;
 import fusiondxhook;
+import dlss;
 
 injector::hook_back<void(*)()> hbCGameProcess;
 void CGameProcessHook()
